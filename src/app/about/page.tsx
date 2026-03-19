@@ -26,6 +26,7 @@ export default function AboutPage() {
             src="/logo.png"
             alt="Team of designers working together"
             fill
+            sizes="(max-width: 768px) 100vw, 50vw"
             className="object-cover"
             data-ai-hint="team meeting design"
           />
