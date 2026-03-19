@@ -14,10 +14,11 @@ export default function PlannerPage() {
       <div className="max-w-5xl mx-auto p-4 border-2 border-dashed rounded-lg">
         <div className="relative w-full aspect-video overflow-hidden rounded-lg shadow-lg">
           <Image
-            src="https://placehold.co/1280x720.png"
+            src="/design.jpg"
             alt="3D Room Planner Interface Mockup"
-            layout="fill"
-            objectFit="cover"
+            fill
+            sizes="(max-width: 768px) 100vw, 80vw"
+            className="object-cover"
             data-ai-hint="3d planner interior design"
           />
         </div>

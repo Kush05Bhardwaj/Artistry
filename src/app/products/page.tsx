@@ -10,7 +10,7 @@ const products = [
     category: "Decor",
     price: "₹4,999",
     vendor: "The Rug Republic",
-    image: "https://placehold.co/400x400.png",
+    image: "/placeholder.svg",
     dataAiHint: "jute rug",
   },
   {
@@ -18,7 +18,7 @@ const products = [
     category: "Furniture",
     price: "₹35,000",
     vendor: "Urban Ladder",
-    image: "https://placehold.co/400x400.png",
+    image: "/placeholder.svg",
     dataAiHint: "minimalist sofa",
   },
   {
@@ -26,7 +26,7 @@ const products = [
     category: "Paints",
     price: "₹2,500",
     vendor: "Asian Paints",
-    image: "https://placehold.co/400x400.png",
+    image: "/placeholder.svg",
     dataAiHint: "paint can",
   },
   {
@@ -34,7 +34,7 @@ const products = [
     category: "Decor",
     price: "₹1,200",
     vendor: "Fabindia",
-    image: "https://placehold.co/400x400.png",
+    image: "/placeholder.svg",
     dataAiHint: "throw pillow",
   },
   {
@@ -42,7 +42,7 @@ const products = [
     category: "Furniture",
     price: "₹8,500",
     vendor: "Pepperfry",
-    image: "https://placehold.co/400x400.png",
+    image: "/placeholder.svg",
     dataAiHint: "coffee table",
   },
   {
@@ -50,7 +50,7 @@ const products = [
     category: "Tiles",
     price: "₹150/sq.ft",
     vendor: "Kajaria",
-    image: "https://placehold.co/400x400.png",
+    image: "/placeholder.svg",
     dataAiHint: "floor tiles",
   },
   {
@@ -58,7 +58,7 @@ const products = [
     category: "Decor",
     price: "₹3,200",
     vendor: "IKEA",
-    image: "https://placehold.co/400x400.png",
+    image: "/placeholder.svg",
     dataAiHint: "pendant lamp",
   },
   {
@@ -66,7 +66,7 @@ const products = [
     category: "Furniture",
     price: "₹12,999",
     vendor: "Wakefit",
-    image: "https://placehold.co/400x400.png",
+    image: "/placeholder.svg",
     dataAiHint: "wood bookshelf",
   },
 ];
