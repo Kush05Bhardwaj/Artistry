@@ -81,6 +81,14 @@ export function DesignForm() {
 
     startTransition(async () => {
       const result = await getSuggestions(formData);
+      if (!result) {
+        toast({
+          variant: "destructive",
+          title: "An error occurred",
+          description: "No response from the server. Please try again.",
+        });
+        return;
+      }
       if (result.error) {
         toast({
           variant: "destructive",

@@ -69,6 +69,7 @@ export default function Home() {
               src="/design.jpg"
               alt="Beautifully designed bed room"
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover"
               data-ai-hint="bed room interior"
               priority
