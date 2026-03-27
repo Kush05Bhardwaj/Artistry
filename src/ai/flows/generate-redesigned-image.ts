@@ -44,19 +44,18 @@ const generateRedesignedImageFlow = ai.defineFlow(
     outputSchema: GenerateRedesignedImageOutputSchema,
   },
   async input => {
-    const {media} = await ai.generate({
-      model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: [
-        {media: {url: input.photoDataUri}},
-        {
-          text: `Redesign this ${input.roomType || 'room'} by applying the following suggestions: ${input.suggestions.join(', ')}. Generate a photorealistic image.`,
-        },
-      ],
-      config: {
-        responseModalities: ['TEXT', 'IMAGE'],
-      },
-    });
-
-    return {photoDataUri: media!.url};
+    const apiKey = process.env.FAL_KEY;
+    if (!apiKey) { throw new Error('Missing FAL_KEY in environment variables. Please add it to your .env.local file.'); }
+    const prompt = 'Photorealistic interior design of a ' + (input.roomType || 'room') + '. Apply the following suggestions: ' + input.suggestions.join(', ') + '. Clean, well-lit, highly detailed, structural boundaries strictly preserved.';
+    const response = await fetch('https://fal.run/fal-ai/flux/dev/image-to-image', { method: 'POST', headers: { 'Authorization': 'Key ' + apiKey, 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: prompt, image_url: input.photoDataUri, strength: 0.85, guidance_scale: 3.5, num_inference_steps: 28, enable_safety_checker: true }) });
+    if (!response.ok) { const err = await response.text(); throw new Error('fal.ai generation failed: ' + err); }
+    const data = await response.json();
+    const generatedImageUrl = data.images?.[0]?.url;
+    if (!generatedImageUrl) { throw new Error('fal.ai returned success but no image URL was found.'); }
+    const imageResponse = await fetch(generatedImageUrl);
+    const arrayBuffer = await imageResponse.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const mimeType = imageResponse.headers.get('content-type') || 'image/jpeg';
+    return {photoDataUri: 'data:' + mimeType + ';base64,' + buffer.toString('base64')};
   },
 );
