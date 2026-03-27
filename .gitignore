@@ -149,3 +149,16 @@ test-results.xml
 
 # Local development
 .local
+
+# Custom / Temporary Scripts
+fetch-img*.js
+test-*.js
+test-*.ts
+out.txt
+models.json
+parse.js
+temp.js
+scratch/
+*.dump
+.env.*
+!.env.example
