@@ -37,7 +37,7 @@ const prompt = ai.definePrompt({
   name: 'generateCostEstimatePrompt',
   input: {schema: GenerateCostEstimateInputSchema},
   output: {schema: GenerateCostEstimateOutputSchema},
-  prompt: \You are an expert interior design cost estimator. I will provide you with two images: the original room and the newly redesigned AI-generated room. 
+  prompt: `You are an expert interior design cost estimator. I will provide you with two images: the original room and the newly redesigned AI-generated room.
 
 Analyze both images to determine what furniture, decor, textures, and structural items were changed, upgraded, or added.
 Create a line-item estimate for each visible change.
@@ -48,9 +48,7 @@ User's Target Budget: {{budget}}
 Original Photo: {{media url=originalPhotoDataUri}}
 Redesigned Photo: {{media url=redesignedPhotoDataUri}}
 
-Format your output as JSON matching the schema. Use realistic approximate market prices in India (INR) for the items. Keep it within the requested budget if possible.\,
-});
-
+Format your output as JSON matching the schema. Use realistic approximate market prices in India (INR) for the items. Keep it within the requested budget if possible.`,
 const generateCostEstimateFlow = ai.defineFlow(
   {
     name: 'generateCostEstimateFlow',
