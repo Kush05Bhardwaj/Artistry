@@ -19,6 +19,8 @@ const GenerateDecorSuggestionsInputSchema = z.object({
     ),
   roomType: z.string().optional().describe('The type of the room (e.g., living room, bedroom).'),
   roomSize: z.string().optional().describe('The size of the room (e.g., small, medium, large).'),
+  style: z.string().optional().describe('The preferred style (e.g., modern, classic, minimalist).'),
+  budget: z.string().optional().describe('The budget constraint.'),
 });
 
 export type GenerateDecorSuggestionsInput = z.infer<typeof GenerateDecorSuggestionsInputSchema>;
@@ -46,6 +48,8 @@ You will identify specific items detected in the image and recommend incorporati
 
 Room Type: {{roomType}}
 Room Size: {{roomSize}}
+Preferred Style: {{style}}
+Budget Range: {{budget}}
 Photo: {{media url=photoDataUri}}
 
 Suggestions should be specific and actionable, providing clear guidance on how to implement the proposed changes.

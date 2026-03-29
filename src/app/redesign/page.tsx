@@ -15,6 +15,7 @@ function RedesignGenerator() {
   const suggestionsParam = searchParams.getAll('suggestions');
   const suggestions = Array.isArray(suggestionsParam) ? suggestionsParam : (suggestionsParam ? [suggestionsParam] : []);
   const roomType = searchParams.get('roomType');
+  const style = searchParams.get('style');
 
   const [redesignedImage, setRedesignedImage] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
@@ -23,13 +24,13 @@ function RedesignGenerator() {
 
   React.useEffect(() => {
     if (hasGeneratedRef.current) return;
-    
+
     const storedImage = sessionStorage.getItem('originalImageDataUri');
     setOriginalImage(storedImage);
 
     if (storedImage && suggestions.length > 0) {
       hasGeneratedRef.current = true;
-      generateRedesignedImage({ photoDataUri: storedImage, suggestions: suggestions.flat(), roomType: roomType || undefined })
+      generateRedesignedImage({ photoDataUri: storedImage, suggestions: suggestions.flat(), roomType: roomType || undefined, style: style || undefined })
         .then(result => {
             setRedesignedImage(result.photoDataUri)
         })

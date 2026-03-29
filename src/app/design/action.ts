@@ -17,6 +17,8 @@ export async function getSuggestions(
     const photo = formData.get("photo") as File;
     const roomType = formData.get("roomType") as string | undefined;
     const roomSize = formData.get("roomSize") as string | undefined;
+    const style = formData.get("style") as string | undefined;
+    const budget = formData.get("budget") as string | undefined;
 
     if (!photo) {
       return { error: "No photo provided." };
@@ -28,6 +30,8 @@ export async function getSuggestions(
       photoDataUri,
       roomType,
       roomSize,
+      style,
+      budget,
     });
 
     return { data: suggestions };
