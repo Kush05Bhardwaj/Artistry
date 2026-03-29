@@ -49,6 +49,8 @@ Original Photo: {{media url=originalPhotoDataUri}}
 Redesigned Photo: {{media url=redesignedPhotoDataUri}}
 
 Format your output as JSON matching the schema. Use realistic approximate market prices in India (INR) for the items. Keep it within the requested budget if possible.`,
+});
+
 const generateCostEstimateFlow = ai.defineFlow(
   {
     name: 'generateCostEstimateFlow',
