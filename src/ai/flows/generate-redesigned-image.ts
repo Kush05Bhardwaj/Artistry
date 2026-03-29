@@ -49,8 +49,8 @@ const generateRedesignedImageFlow = ai.defineFlow(
     if (!apiKey) { throw new Error('Missing FAL_KEY in environment variables. Please add it to your .env.local file.'); }
     
     const styleStr = input.style ? `${input.style} style ` : '';
-    const prompt = `Photorealistic ${styleStr}interior design of a ` + (input.roomType || 'room') + '. Apply the following suggestions: ' + input.suggestions.join(', ') + '. Keep the original doors, windows, and main structural architecture fully intact. Do not remove any doors or walls. Clean, well-lit, highly detailed.';
-    const response = await fetch('https://fal.run/fal-ai/flux/dev/image-to-image', { method: 'POST', headers: { 'Authorization': 'Key ' + apiKey, 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: prompt, image_url: input.photoDataUri, strength: 0.77, guidance_scale: 7.5, num_inference_steps: 28, enable_safety_checker: true }) });
+    const prompt = `A highly detailed, photorealistic ${styleStr}interior design of a ${input.roomType || 'room'}. Vividly transform the decor, furniture, colors, and textures by applying these exact changes: ${input.suggestions.join(', ')}. MAXIMUM IMPORTANCE: You must strictly preserve the exact original architectural layout. Do not remove, cover, or move any existing doors, windows, walls, or structural boundaries. Transform only the interior aesthetics while keeping the room's geometry absolutely identical.`;
+    const response = await fetch('https://fal.run/fal-ai/flux/dev/image-to-image', { method: 'POST', headers: { 'Authorization': 'Key ' + apiKey, 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: prompt, image_url: input.photoDataUri, strength: 0.81, guidance_scale: 8.5, num_inference_steps: 30, enable_safety_checker: true }) });
     if (!response.ok) { const err = await response.text(); throw new Error('fal.ai generation failed: ' + err); }
     const data = await response.json();
     const generatedImageUrl = data.images?.[0]?.url;
