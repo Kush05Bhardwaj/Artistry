@@ -52,7 +52,7 @@ export default function RewardsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center p-3 bg-background rounded-md">
-                <span>₹500 Off on Furniture</span>
+                <span>500 Off on Furniture</span>
                 <Button disabled>500 Points</Button>
               </div>
               <div className="flex justify-between items-center p-3 bg-background rounded-md">
