@@ -126,14 +126,7 @@ export default function Home() {
               </Button>
             </div>
             <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground md:justify-start">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
-                <span>Free to start</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
-                <span>No credit card required</span>
-              </div>
+              
             </div>
           </div>
           <div className="relative h-64 w-full overflow-hidden rounded-lg shadow-xl md:h-96">

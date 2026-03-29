@@ -10,9 +10,6 @@ import { useRouter } from 'next/navigation';
 
 const navLinks = [
   { href: '/design', label: 'AI Design' },
-  { href: '/products', label: 'Products' },
-  { href: '/estimator', label: 'Estimator' },
-  { href: '/planner', label: '3D Planner' },
   { href: '/about', label: 'About' },
 ];
 
@@ -91,16 +88,7 @@ export function Header() {
                    <span className="sr-only">Log Out</span>
                 </Button>
               </>
-            ) : (
-              <>
-                <Button variant="secondary" asChild>
-                  <Link href="/login">Log In</Link>
-                </Button>
-                <Button asChild>
-                  <Link href="/login">Sign Up</Link>
-                </Button>
-              </>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
