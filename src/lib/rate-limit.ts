@@ -72,7 +72,7 @@ export const withRateLimit = (
   limiter: RateLimiter,
   getIdentifier: (req: any) => string
 ) => {
-  return (handler: Function) => {
+  return (handler: (...args: any[]) => any) => {
     return async (req: any, res: any) => {
       const identifier = getIdentifier(req);
       
