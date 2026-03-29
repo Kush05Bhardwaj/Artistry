@@ -5,9 +5,11 @@ import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ComparisonSlider } from "./comparison-slider";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Heart, Loader } from "lucide-react";
+import { ShoppingBag, Heart, Loader, Receipt, Sparkles } from "lucide-react";
 import Link from 'next/link';
 import { generateRedesignedImage } from '@/ai/flows/generate-redesigned-image';
+import { getCostEstimate } from './action';
+import type { GenerateCostEstimateOutput } from '@/ai/flows/generate-cost-estimate';
 
 function RedesignGenerator() {
   const searchParams = useSearchParams();
@@ -20,6 +22,8 @@ function RedesignGenerator() {
   const [redesignedImage, setRedesignedImage] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [costEstimate, setCostEstimate] = React.useState<GenerateCostEstimateOutput | null>(null);
+  const [isEstimatingCost, setIsEstimatingCost] = React.useState(false);
   const hasGeneratedRef = React.useRef(false);
 
   React.useEffect(() => {
@@ -32,7 +36,9 @@ function RedesignGenerator() {
       hasGeneratedRef.current = true;
       generateRedesignedImage({ photoDataUri: storedImage, suggestions: suggestions.flat(), roomType: roomType || undefined, style: style || undefined })
         .then(result => {
-            setRedesignedImage(result.photoDataUri)
+            setRedesignedImage(result.photoDataUri);
+            setIsEstimatingCost(true);
+            getCostEstimate({ originalPhotoDataUri: storedImage, redesignedPhotoDataUri: result.photoDataUri, roomType: roomType || undefined }).then(costRes => { if (costRes.data) setCostEstimate(costRes.data); }).finally(() => setIsEstimatingCost(false));
         })
         .catch(err => {
             console.error(err);
@@ -95,7 +101,41 @@ function RedesignGenerator() {
         />
       </div>
 
-       <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+             {isEstimatingCost && (
+        <div className="text-center space-y-4 mt-8">
+            <Loader className="w-8 h-8 mx-auto text-primary animate-spin" />
+            <h3 className="text-md font-semibold">Estimating costs for changes...</h3>
+        </div>
+      )}
+
+      {costEstimate && (
+        <div className="max-w-3xl mx-auto mt-12 bg-card p-6 rounded-lg shadow-sm border border-border">
+          <div className="flex items-center gap-2 mb-4">
+            <Receipt className="w-6 h-6 text-primary" />
+            <h2 className="text-2xl font-semibold">Estimated Cost of Upgrades</h2>
+          </div>
+          <p className="text-muted-foreground mb-6">{costEstimate.summary}</p>
+          <div className="space-y-4">
+            {costEstimate.items.map((item, i) => (
+              <div key={i} className="flex justify-between items-start border-b border-border/50 pb-4 last:border-0 last:pb-0">
+                <div>
+                  <h4 className="font-semibold">{item.item}</h4>
+                  <p className="text-sm text-muted-foreground">{item.reason}</p>
+                </div>
+                <div className="font-medium whitespace-nowrap min-w-[100px] text-right">
+                  ?{item.estimatedCost.toLocaleString('en-IN')}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
+            <h3 className="text-xl font-bold">Total Estimate</h3>
+            <span className="text-xl font-bold text-primary">?{costEstimate.totalCostRaw.toLocaleString('en-IN')}</span>
+          </div>
+        </div>
+      )}
+
+      <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
         <Button size="lg" asChild>
           <Link href="/products">
             <ShoppingBag className="mr-2 h-5 w-5" />
@@ -135,3 +175,6 @@ export default function RedesignPage() {
     </div>
   );
 }
+
+
+
