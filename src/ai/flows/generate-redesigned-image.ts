@@ -50,7 +50,7 @@ const generateRedesignedImageFlow = ai.defineFlow(
     
     const styleStr = input.style ? `${input.style} style ` : '';
     const prompt = `Photorealistic ${styleStr}interior design of a ` + (input.roomType || 'room') + '. Apply the following suggestions: ' + input.suggestions.join(', ') + '. Clean, well-lit, highly detailed, structural boundaries strictly preserved.';
-    const response = await fetch('https://fal.run/fal-ai/flux/dev/image-to-image', { method: 'POST', headers: { 'Authorization': 'Key ' + apiKey, 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: prompt, image_url: input.photoDataUri, strength: 0.70, guidance_scale: 3.5, num_inference_steps: 28, enable_safety_checker: true }) });
+    const response = await fetch('https://fal.run/fal-ai/flux/dev/image-to-image', { method: 'POST', headers: { 'Authorization': 'Key ' + apiKey, 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: prompt, image_url: input.photoDataUri, strength: 0.85, guidance_scale: 7.5, num_inference_steps: 28, enable_safety_checker: true }) });
     if (!response.ok) { const err = await response.text(); throw new Error('fal.ai generation failed: ' + err); }
     const data = await response.json();
     const generatedImageUrl = data.images?.[0]?.url;
