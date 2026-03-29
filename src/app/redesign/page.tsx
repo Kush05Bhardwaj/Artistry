@@ -19,12 +19,16 @@ function RedesignGenerator() {
   const [redesignedImage, setRedesignedImage] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
+  const hasGeneratedRef = React.useRef(false);
 
   React.useEffect(() => {
+    if (hasGeneratedRef.current) return;
+    
     const storedImage = sessionStorage.getItem('originalImageDataUri');
     setOriginalImage(storedImage);
-    
+
     if (storedImage && suggestions.length > 0) {
+      hasGeneratedRef.current = true;
       generateRedesignedImage({ photoDataUri: storedImage, suggestions: suggestions.flat(), roomType: roomType || undefined })
         .then(result => {
             setRedesignedImage(result.photoDataUri)
