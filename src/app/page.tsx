@@ -134,14 +134,14 @@ export default function Home() {
               src="/design.jpg"
               alt="Beautifully designed bedroom with modern furniture and warm lighting"
               fill
+              priority
               className="object-cover"
               data-ai-hint="bed room interior"
-              priority
-              sizes="(max-width: 768px) 100vw, 50vw"
             />
           </div>
         </div>
       </section>
+
 
       {/* Features Section */}
       <section className="w-full py-16 md:py-24">
