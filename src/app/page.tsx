@@ -131,7 +131,7 @@ export default function Home() {
           </div>
           <div className="relative h-64 w-full overflow-hidden rounded-lg shadow-xl md:h-96">
             <Image
-              src="/design.jpg"
+              src="/room.jpg"
               alt="Beautifully designed bedroom with modern furniture and warm lighting"
               fill
               priority
