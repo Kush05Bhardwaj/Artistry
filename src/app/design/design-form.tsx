@@ -26,6 +26,7 @@ import {
 import { getSuggestions } from "./action";
 import type { GenerateDecorSuggestionsOutput } from "@/ai/flows/generate-decor-suggestions";
 import { Badge } from "@/components/ui/badge";
+import { saveDesignAction } from "@/app/redesign/action";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { validateFile, compressImage } from "@/lib/validation";
@@ -147,6 +148,45 @@ export function DesignForm() {
     params.set('style', form.getValues('style') || '');
     router.push(`/redesign?${params.toString()}`);
   }
+
+  const [isSaving, setIsSaving] = useState(false);
+  const handleSaveDesign = async () => {
+    if (!suggestions) return;
+    const storedImage = sessionStorage.getItem('originalImageDataUri');
+    if (!storedImage) return;
+
+    setIsSaving(true);
+    try {
+      const result = await saveDesignAction({
+        originalImage: storedImage,
+        roomType: form.getValues('roomType') || 'room',
+        style: form.getValues('style') || 'modern',
+        suggestions: suggestions.suggestions
+      });
+
+      if (result.error) {
+        toast({
+          title: "Save Failed",
+          description: result.error,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Design Saved",
+          description: "Your design suggestions have been saved to your account.",
+        });
+        router.push("/account");
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred while saving.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <>
@@ -335,10 +375,12 @@ export function DesignForm() {
               </ul>
             </div>
             <div className="flex gap-4 pt-4">
-                <Button onClick={handleSeeRedesign} className="w-full">
-                  See AI Redesign
-                </Button>
-                <Button variant="secondary" className="w-full">Save Design</Button>
+              <Button onClick={handleSeeRedesign} className="w-full">
+                See AI Redesign
+              </Button>
+              <Button variant="secondary" onClick={handleSaveDesign} className="w-full" disabled={isSaving}>
+                {isSaving ? "Saving..." : "Save Design"}
+              </Button>
             </div>
           </CardContent>
         </Card>

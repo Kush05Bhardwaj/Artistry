@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { WhatsAppButton } from "@/components/ui/whatsapp-button";
 import { AuthProvider } from '@/hooks/use-auth';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { VisitTracker } from '@/components/layout/tracker';
 
 export const metadata: Metadata = {
   title: {
@@ -123,6 +124,7 @@ export default function RootLayout({
         />
       </head>
       <body className={cn('min-h-screen bg-background font-body antialiased')}>
+        <VisitTracker />
         <ErrorBoundary>
           <AuthProvider>
             <div className="relative flex min-h-screen flex-col">

@@ -1,8 +1,9 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode } from "react";
+import { useSession, signOut as nextAuthSignOut, signIn as nextAuthSignIn, SessionProvider } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
-// Basic User type replacing Firebase User
 export interface User {
   uid: string;
   email: string | null;
@@ -23,97 +24,62 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Password validation
-const validatePassword = (password: string): { valid: boolean; errors: string[] } => {
-  const errors: string[] = [];
-  
-  if (password.length < 8) {
-    errors.push('Password must be at least 8 characters long');
-  }
-  
-  if (!/[A-Z]/.test(password)) {
-    errors.push('Password must contain at least one uppercase letter');
-  }
-  
-  if (!/[a-z]/.test(password)) {
-    errors.push('Password must contain at least one lowercase letter');
-  }
-  
-  if (!/\d/.test(password)) {
-    errors.push('Password must contain at least one number');
-  }
-  
-  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-    errors.push('Password must contain at least one special character');
-  }
-  
-  return {
-    valid: errors.length === 0,
-    errors
-  };
-};
+const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-// Email validation
-const validateEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // In a real app with MongoDB, you would check a session token or cookie here
-    const storedUser = localStorage.getItem('artistry_user');
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (e) {
-        setUser(null);
-      }
-    } else {
-      setUser(null);
-    }
-    setLoading(false);
-  }, []);
+  const loading = status === "loading";
+  
+  const user = session?.user ? {
+    uid: session.user.id || "",
+    email: session.user.email || null,
+    displayName: session.user.name || null,
+    emailVerified: true,
+  } : null;
 
   const signup = async (email: string, password: string, name?: string) => {
-    if (!validateEmail(email)) throw new Error('Please enter a valid email address');
-    const passwordValidation = validatePassword(password);
-    if (!passwordValidation.valid) throw new Error(`Password requirements not met:\n${passwordValidation.errors.join('\n')}`);
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, name }),
+    });
     
-    const newUser: User = { uid: Math.random().toString(36).substring(2, 9), email, displayName: name || null, emailVerified: true };
-    localStorage.setItem('artistry_user', JSON.stringify(newUser));
-    setUser(newUser);
-    return { user: newUser };
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.message || "Error occurred during registration");
+    }
+
+    return await login(email, password);
   };
-  
+
   const login = async (email: string, password: string) => {
-    if (!validateEmail(email)) throw new Error('Please enter a valid email address');
+    const result = await nextAuthSignIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+
+    if (result?.error) {
+      throw new Error("Invalid credentials");
+    }
     
-    // Simulating success
-    const loggedInUser: User = { uid: Math.random().toString(36).substring(2, 9), email, displayName: 'User', emailVerified: true };
-    localStorage.setItem('artistry_user', JSON.stringify(loggedInUser));
-    setUser(loggedInUser);
-    return { user: loggedInUser };
+    router.push("/design");
+    router.refresh();
+    return result;
   };
 
   const logout = async () => {
-    localStorage.removeItem('artistry_user');
-    setUser(null);
+    await nextAuthSignOut({ redirect: false });
+    router.push("/login");
+    router.refresh();
   };
-  
+
   const resetPassword = async (email: string) => {
     console.log("Mock password reset for:", email);
   };
   
   const updateUserProfile = async (data: { displayName?: string; photoURL?: string }) => {
-    if (user) {
-      const updated = { ...user, displayName: data.displayName || user.displayName };
-      localStorage.setItem('artistry_user', JSON.stringify(updated));
-      setUser(updated);
-    }
+    console.log("Mock update profile:", data);
   };
 
   const value = {
@@ -129,15 +95,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
+  );
+};
+
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  return (
+    <SessionProvider>
+      <AuthProviderInner>
+        {children}
+      </AuthProviderInner>
+    </SessionProvider>
   );
 };
 
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
+

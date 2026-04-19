@@ -8,7 +8,9 @@ import { Button } from "@/components/ui/button";
 import { ShoppingBag, Heart, Loader, Receipt, Sparkles } from "lucide-react";
 import Link from 'next/link';
 import { generateRedesignedImage } from '@/ai/flows/generate-redesigned-image';
-import { getCostEstimate } from './action';
+import { getCostEstimate, saveDesignAction } from './action';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 import type { GenerateCostEstimateOutput } from '@/ai/flows/generate-cost-estimate';
 
 function RedesignGenerator() {
@@ -25,6 +27,46 @@ function RedesignGenerator() {
   const [costEstimate, setCostEstimate] = React.useState<GenerateCostEstimateOutput | null>(null);
   const [isEstimatingCost, setIsEstimatingCost] = React.useState(false);
   const hasGeneratedRef = React.useRef(false);
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isSaving, setIsSaving] = React.useState(false);
+
+  const handleSaveDesign = async () => {
+    if (!originalImage || !redesignedImage) return;
+    setIsSaving(true);
+    try {
+      const result = await saveDesignAction({
+        originalImage,
+        generatedImage: redesignedImage,
+        roomType: roomType || undefined,
+        style: style || undefined,
+        suggestions: suggestions.flat() || undefined,
+        costEstimate: costEstimate || undefined,
+      });
+
+      if (result.error) {
+        toast({
+          title: "Save Failed",
+          description: result.error,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Design Saved",
+          description: "Your design has been saved to your account.",
+        });
+        router.push("/account");
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred while saving.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   React.useEffect(() => {
     if (hasGeneratedRef.current) return;
@@ -142,9 +184,9 @@ function RedesignGenerator() {
             Shop This Look
           </Link>
         </Button>
-        <Button size="lg" variant="secondary">
-          <Heart className="mr-2 h-5 w-5" />
-          Save Design
+        <Button size="lg" variant="secondary" onClick={handleSaveDesign} disabled={isSaving}>
+          {isSaving ? <Loader className="mr-2 h-5 w-5 animate-spin" /> : <Heart className="mr-2 h-5 w-5" />}
+          {isSaving ? "Saving..." : "Save Design"}
         </Button>
       </div>
     </>
