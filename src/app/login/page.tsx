@@ -66,7 +66,7 @@ export default function LoginPage() {
         title: "Login Successful", 
         description: "Welcome back to Artistry AI!" 
       });
-      router.push('/design');
+      window.location.href = '/design';
     } catch (error: any) {
       toast({
         variant: "destructive",

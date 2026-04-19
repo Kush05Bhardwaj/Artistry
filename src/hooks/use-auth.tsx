@@ -63,8 +63,6 @@ const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
       throw new Error("Invalid credentials");
     }
     
-    router.push("/design");
-    router.refresh();
     return result;
   };
 
