@@ -135,6 +135,7 @@ export default function Home() {
               alt="Beautifully designed bedroom with modern furniture and warm lighting"
               fill
               priority
+              unoptimized
               className="object-cover"
               data-ai-hint="bed room interior"
             />
