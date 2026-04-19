@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 const protectedRoutes = ['/design', '/redesign', '/account', '/admin'];
 
-export function middleware(req: NextRequest) {
+export default function proxy(req: NextRequest) {
   const isProtected = protectedRoutes.some((route) => req.nextUrl.pathname.startsWith(route));
 
   if (isProtected) {
