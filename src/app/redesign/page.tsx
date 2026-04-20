@@ -165,14 +165,14 @@ function RedesignGenerator() {
                   <p className="text-sm text-muted-foreground">{item.reason}</p>
                 </div>
                 <div className="font-medium whitespace-nowrap min-w-[100px] text-right">
-                  ₹{item.estimatedCost.toLocaleString('en-IN')}
+                  Rs. {item.estimatedCost.toLocaleString('en-IN')}
                 </div>
               </div>
             ))}
           </div>
           <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
             <h3 className="text-xl font-bold">Total Estimate</h3>
-            <span className="text-xl font-bold text-primary">₹{costEstimate.totalCostRaw.toLocaleString('en-IN')}</span>
+            <span className="text-xl font-bold text-primary">Rs. {costEstimate.totalCostRaw.toLocaleString('en-IN')}</span>
           </div>
         </div>
       )}

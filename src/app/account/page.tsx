@@ -230,14 +230,14 @@ export default function AccountPage() {
                                          <p className="text-xs text-muted-foreground">{item.reason}</p>
                                        </div>
                                        <div className="text-sm font-medium whitespace-nowrap min-w-[80px] text-right">
-                                         ₹{item.estimatedCost.toLocaleString('en-IN')}
+                                         Rs. {item.estimatedCost.toLocaleString('en-IN')}
                                        </div>
                                      </div>
                                    ))}
                                  </div>
-                                 <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
-                                   <h3 className="text-lg font-bold">Total Estimate</h3>
-                                   <span className="text-lg font-bold text-primary">₹{design.costEstimate.totalCostRaw.toLocaleString('en-IN')}</span>
+                                 <div className="mt-4 pt-3 border-t border-border flex justify-between items-center">
+                                   <h4 className="font-bold">Total Estimate</h4>
+                                   <span className="text-lg font-bold text-primary">Rs. {design.costEstimate.totalCostRaw.toLocaleString('en-IN')}</span>
                                  </div>
                                </div>
                              )}

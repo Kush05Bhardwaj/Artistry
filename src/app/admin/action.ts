@@ -43,12 +43,10 @@ export async function getAdminAnalytics() {
 
     // Designs by date
     const designsByDate = await db.collection("designs").aggregate([
-      { $match: { createdAt: { $exists: true, $type: "date" } } },
+      { $match: { createdAt: { $exists: true, $type: "string" } } },
       {
         $group: {
-          _id: {
-            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" }
-          },
+          _id: { $substr: ["$createdAt", 0, 10] },
           count: { $sum: 1 }
         }
       },
