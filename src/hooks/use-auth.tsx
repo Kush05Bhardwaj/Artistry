@@ -92,6 +92,7 @@ const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
     signup,
     login,
     loginWithGoogle,
+
     googleAuthEnabled: process.env.NEXT_PUBLIC_GOOGLE_AUTH_ENABLED === "true",
     logout,
     resetPassword,
