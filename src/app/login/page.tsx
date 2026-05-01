@@ -77,7 +77,6 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
-
   const onSignUpSubmit = async (data: SignUpValues) => {
     setIsLoading(true);
     try {

@@ -16,6 +16,8 @@ interface AuthContextType {
   loading: boolean;
   signup: (email: string, password: string, name?: string) => Promise<any>;
   login: (email: string, password: string) => Promise<any>;
+  loginWithGoogle: () => Promise<any>;
+  googleAuthEnabled: boolean;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updateUserProfile: (data: { displayName?: string; photoURL?: string }) => Promise<void>;
@@ -66,6 +68,10 @@ const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
     return result;
   };
 
+  const loginWithGoogle = async () => {
+    return await nextAuthSignIn("google", { callbackUrl: "/design" });
+  };
+
   const logout = async () => {
     await nextAuthSignOut({ redirect: false });
     router.push("/login");
@@ -85,6 +91,8 @@ const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
     loading,
     signup,
     login,
+    loginWithGoogle,
+    googleAuthEnabled: process.env.NEXT_PUBLIC_GOOGLE_AUTH_ENABLED === "true",
     logout,
     resetPassword,
     updateUserProfile,
@@ -115,4 +123,3 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
-

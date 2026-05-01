@@ -1,13 +1,20 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import clientPromise from "./mongodb";
-import bcrypt from "bcryptjs";
+import Google from "next-auth/providers/google";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   debug: true,
   trustHost: true,
   secret: process.env.AUTH_SECRET,
   providers: [
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+      ? [
+          Google({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          }),
+        ]
+      : []),
     Credentials({
       name: "Credentials",
       credentials: {
@@ -18,6 +25,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Invalid credentials");
         }
+
+        const [{ default: clientPromise }, { default: bcrypt }] = await Promise.all([
+          import("./mongodb"),
+          import("bcryptjs"),
+        ]);
         
         const client = await clientPromise;
         const db = client.db('artistry');
