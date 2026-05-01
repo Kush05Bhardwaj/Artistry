@@ -77,6 +77,7 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
+
   const onGoogleLogin = async () => {
     setIsLoading(true);
     try {

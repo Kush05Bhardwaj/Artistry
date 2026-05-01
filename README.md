@@ -258,3 +258,22 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 Made with ❤️ by the Artistry AI Team 
+
+## Google OAuth Setup
+
+To enable Google sign-in, configure these environment variables:
+
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
+- `AUTH_URL` (for local dev: `http://localhost:9002`)
+- `NEXT_PUBLIC_GOOGLE_AUTH_ENABLED=true`
+
+In Google Cloud Console, add this Authorized redirect URI:
+
+- `http://localhost:9002/api/auth/callback/google` (local)
+
+For production, also add:
+
+- `https://<your-domain>/api/auth/callback/google`
+
+If these don't match exactly, Google returns `Error 401: invalid_client`.
