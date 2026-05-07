@@ -42,7 +42,7 @@ type LoginValues = z.infer<typeof loginSchema>;
 type SignUpValues = z.infer<typeof signUpSchema>;
 
 export default function LoginPage() {
-  const { login, loginWithGoogle, signup, isEmailVerified } = useAuth();
+  const { login, signup, isEmailVerified } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false);
@@ -78,19 +78,6 @@ export default function LoginPage() {
     }
   };
 
-  const onGoogleLogin = async () => {
-    setIsLoading(true);
-    try {
-      await loginWithGoogle();
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Google Sign-In Failed",
-        description: error?.message || "Unable to sign in with Google.",
-      });
-      setIsLoading(false);
-    }
-  };
 
   const onSignUpSubmit = async (data: SignUpValues) => {
     setIsLoading(true);
@@ -186,7 +173,6 @@ export default function LoginPage() {
               </CardContent>
               
               <CardFooter className="flex flex-col space-y-4">
-                <Button type="button" variant="outline" className="w-full" disabled={isLoading} onClick={onGoogleLogin}>Continue with Google</Button>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? (
                     <>

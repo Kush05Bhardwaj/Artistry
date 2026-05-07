@@ -50,6 +50,16 @@ export const contactFormSchema = z.object({
   subject: z.string().min(2).max(100).optional(),
 });
 
+// Feedback form validation schema
+export const feedbackFormSchema = z.object({
+  easeOfUse: z.enum(["very-easy", "easy", "average", "difficult", "very-difficult"]),
+  satisfaction: z.enum(["extremely-satisfied", "satisfied", "neutral", "unsatisfied", "very-unsatisfied"]),
+  visualization: z.enum(["yes-very-clearly", "yes-somehow", "neutral", "not-much", "not-at-all"]),
+  wouldUse: z.enum(["definitely-yes", "probably-yes", "maybe", "probably-no", "definitely-no"]),
+  featureImpressed: z.enum(["ai-room-redesign", "budget-estimation", "decor-suggestions", "diy-planning", "simplicity"]),
+  suggestions: z.string().max(2000).optional(),
+});
+
 // Utility functions for validation
 export const validateFile = (file: File) => {
   const maxSize = parseInt(process.env.MAX_FILE_SIZE || '10485760');

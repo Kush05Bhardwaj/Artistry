@@ -1,46 +1,12 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Paintbrush, ShoppingBag, Wallet, Star, ArrowRight, CheckCircle } from 'lucide-react';
 import { Suspense } from 'react';
 import { ProductCardSkeleton, TestimonialCardSkeleton } from '@/components/ui/loading-states';
-
-// Lazy load components for better performance
-const ContactForm = () => {
-  return (
-    <Card className="w-full max-w-2xl">
-      <CardHeader className="text-center">
-        <CardTitle className="font-headline text-2xl">Contact Us</CardTitle>
-        <CardDescription>We'll get back to you as soon as possible.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" placeholder="Your Name" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="Your Email" />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="message">Message</Label>
-          <Textarea id="message" placeholder="Your message..." />
-        </div>
-        <Button className="w-full">
-          Send Message
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
-      </CardContent>
-    </Card>
-  );
-};
+import { FeedbackForm } from '@/components/feedback-form';
 
 const testimonials = [
   {
@@ -236,18 +202,18 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Contact Section */}
+      {/* Feedback Section */}
       <section className="w-full bg-accent py-16 md:py-24">
         <div className="container mx-auto space-y-12 px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">Get In Touch</h2>
+            <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">Share Your Feedback</h2>
             <p className="max-w-[700px] text-foreground/70 md:text-xl">
-              Have questions? We'd love to hear from you. Drop us a message below.
+              Tell us what worked well and what we can improve for your next design.
             </p>
           </div>
           <div className="flex justify-center">
-            <Suspense fallback={<div>Loading contact form...</div>}>
-              <ContactForm />
+            <Suspense fallback={<div>Loading feedback form...</div>}>
+              <FeedbackForm />
             </Suspense>
           </div>
         </div>
