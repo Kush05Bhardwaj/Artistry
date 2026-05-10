@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
-import { getTrafficAnalytics, getUserGrowth, getAIUsageStats, getDeviceAnalytics, getGeographicAnalytics, getBrowserAnalytics } from "./actions/analytics";
+import { getTrafficAnalytics, getUserGrowth, getDeviceAnalytics, getGeographicAnalytics, getBrowserAnalytics } from "../actions/analytics";
 import {
   AreaChart,
   Area,
@@ -46,11 +46,11 @@ export default function AnalyticsPage() {
           getBrowserAnalytics(),
         ]);
 
-        if (!trafficRes.error) setTraffic(trafficRes.traffic || []);
-        if (!usersRes.error) setUsers(Array.isArray(usersRes) ? usersRes : []);
-        if (!devicesRes.error) setDevices(Array.isArray(devicesRes) ? devicesRes : []);
-        if (!geoRes.error) setGeo(Array.isArray(geoRes) ? geoRes : []);
-        if (!browsersRes.error) setBrowsers(Array.isArray(browsersRes) ? browsersRes : []);
+        if (trafficRes && typeof trafficRes === 'object' && 'traffic' in trafficRes) setTraffic((trafficRes as any).traffic || []);
+        if (usersRes && typeof usersRes === 'object' && !Array.isArray(usersRes) && 'error' in usersRes === false) setUsers(Array.isArray(usersRes) ? usersRes : []);
+        if (devicesRes && typeof devicesRes === 'object' && Array.isArray(devicesRes)) setDevices(devicesRes as any[]);
+        if (geoRes && typeof geoRes === 'object' && Array.isArray(geoRes)) setGeo(geoRes as any[]);
+        if (browsersRes && typeof browsersRes === 'object' && Array.isArray(browsersRes)) setBrowsers(browsersRes as any[]);
       } catch (err) {
         console.error("Failed to load analytics:", err);
       } finally {

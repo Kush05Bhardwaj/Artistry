@@ -253,7 +253,7 @@ export async function getSiteRoutes() {
 
     return routes.map(r => ({
       path: r._id || "/",
-      title: r._id === "/" ? "Home" : r._id?.replace("/", "").replace("-", " ").replace(/^\w/, c => c.toUpperCase()) || "Page",
+      title: r._id === "/" ? "Home" : r._id?.replace("/", "").replace("-", " ").replace(/^\w/, (c: string) => c.toUpperCase()) || "Page",
       totalVisits: r.totalVisits || 0,
       uniqueVisitors: r.uniqueVisitors || 0,
       avgTimeSpent: r.avgTimeSpent ? `${Math.round(r.avgTimeSpent / 60)}m ${Math.round(r.avgTimeSpent % 60)}s` : "0m 0s",

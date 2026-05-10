@@ -26,11 +26,11 @@ export default function AdminDashboardPage() {
           getAdminNotifications(),
         ]);
 
-        if (statsRes.error) setError(statsRes.error);
+        if (statsRes && typeof statsRes === 'object' && 'error' in statsRes) setError((statsRes as any).error);
         else setStats(statsRes);
 
-        if (!activityRes.error) setActivity(activityRes);
-        if (!notifRes.error) setNotifications(notifRes);
+        if (activityRes && typeof activityRes === 'object' && !Array.isArray(activityRes) && 'error' in activityRes === false) setActivity(activityRes as any[]);
+        if (notifRes && typeof notifRes === 'object' && !Array.isArray(notifRes) && 'error' in notifRes === false) setNotifications(notifRes as any[]);
       } catch (err) {
         setError("Failed to load dashboard data");
       } finally {
@@ -56,7 +56,7 @@ export default function AdminDashboardPage() {
     );
   }
 
-  const statCards = [
+  const statCards: Array<{ title: string; value: string | number; change: number; trend: "up" | "down" | "stable"; icon: React.ReactNode }> = [
     { title: "Total Users", value: stats?.totalUsers || 0, change: 12.5, trend: "up", icon: <Users className="h-6 w-6 text-primary" /> },
     { title: "Active Today", value: stats?.activeUsersToday || 0, change: 8.2, trend: "up", icon: <Activity className="h-6 w-6 text-primary" /> },
     { title: "Total Designs", value: stats?.totalDesigns || 0, change: 15.3, trend: "up", icon: <Palette className="h-6 w-6 text-primary" /> },

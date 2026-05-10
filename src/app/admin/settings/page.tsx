@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@/components/ui/seperator";
 import { Settings, Bot, Shield, Database, Palette } from "lucide-react";
 
 export default function SettingsPage() {
