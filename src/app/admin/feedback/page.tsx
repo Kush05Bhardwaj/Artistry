@@ -133,7 +133,7 @@ export default function FeedbackPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {((stats.satisfactionStats?.find(s => s.label === "extremely-satisfied" || s.label === "satisfied")?.count || 0) / (stats.total || 1) * 100).toFixed(0)}%
+                {((stats.satisfactionStats?.find((s: any) => s.label === "extremely-satisfied" || s.label === "satisfied")?.count || 0) / (stats.total || 1) * 100).toFixed(0)}%
               </div>
             </CardContent>
           </Card>
