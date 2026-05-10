@@ -4,10 +4,7 @@ import { auth } from "@/lib/auth";
 import clientPromise from "@/lib/mongodb";
 
 // Add specific admin emails here or check roles if you implement them.
-const ADMIN_EMAILS = [
-  "kush2012bhardwaj@gmail.com",
-  "agaur2813@gmail.com"
-];
+const ADMIN_EMAILS = process.env.ADMIN_EMAILS?.split(",").map(e => e.trim()) || [];
 
 export async function getAdminAnalytics() {
   try {
