@@ -201,23 +201,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Feedback Section */}
-      <section className="w-full bg-accent py-16 md:py-24">
-        <div className="container mx-auto space-y-12 px-4 md:px-6">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">Share Your Feedback</h2>
-            <p className="max-w-[700px] text-foreground/70 md:text-xl">
-              Tell us what worked well and what we can improve for your next design.
-            </p>
-          </div>
-          <div className="flex justify-center">
-            <Suspense fallback={<div>Loading feedback form...</div>}>
-              <FeedbackForm />
-            </Suspense>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
