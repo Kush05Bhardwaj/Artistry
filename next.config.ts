@@ -37,12 +37,23 @@ const nextConfig: NextConfig = {
   
   // Turbopack configuration
   turbopack: {
+    resolveAlias: {
+      'zod/v3': 'zod',
+    },
     rules: {
       '*.svg': {
         loaders: ['@svgr/webpack'],
         as: '*.js',
       },
     },
+  },
+
+  webpack: (config, { isServer }) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'zod/v3': 'zod',
+    };
+    return config;
   },
 
   // Security headers
