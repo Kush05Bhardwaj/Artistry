@@ -44,61 +44,11 @@ const AI_STAGES = [
 export default function DesignPage() {
   return (
     <div className="min-h-screen">
-      <HeroSection />
       <AIStudioSection />
-      <InspirationGallery />
     </div>
   );
 }
 
-function HeroSection() {
-  return (
-    <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/10" />
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-secondary/20 rounded-full blur-3xl animate-pulse delay-1000" />
-      </div>
-
-      {/* Grid Pattern */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)', backgroundSize: '50px 50px' }} />
-
-      <div className="relative z-10 container mx-auto px-4 py-20 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <Badge variant="outline" className="mb-6 px-4 py-1.5 text-sm bg-primary/10 border-primary/20">
-            <Sparkles className="w-4 h-4 mr-2 text-primary" />
-            Powered by Advanced AI
-          </Badge>
-
-          <h1 className="font-headline text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-foreground via-primary to-secondary bg-clip-text text-transparent">
-            Transform Your Room<br />with AI
-          </h1>
-
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-            Upload your room photo and generate stunning AI-powered redesigns instantly.
-            Experience the future of interior design.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="h-14 px-8 text-lg rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all">
-              <Wand2 className="w-5 h-5 mr-2" />
-              Try AI Redesign
-            </Button>
-            <Button size="lg" variant="outline" className="h-14 px-8 text-lg rounded-full">
-              Explore Inspirations
-              <ChevronRight className="w-5 h-5 ml-2" />
-            </Button>
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
 
 function AIStudioSection() {
   const [image, setImage] = useState<string | null>(null);
@@ -454,43 +404,4 @@ function AIStudioSection() {
   );
 }
 
-function InspirationGallery() {
-  const inspirations = [
-    { id: 1, title: "Modern Minimalist Living", image: "https://images.unsplash.com/photo-1600210492493-0946911123ea?w=600" },
-    { id: 2, title: "Scandinavian Bedroom", image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=600" },
-    { id: 3, title: "Luxury Kitchen Design", image: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=600" },
-    { id: 4, title: "Industrial Office Space", image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600" },
-    { id: 5, title: "Japandi Living Room", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600" },
-    { id: 6, title: "Bohemian Bedroom", image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=600" },
-  ];
 
-  return (
-    <section className="py-20 bg-muted/20">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Trending Redesigns</h2>
-          <p className="text-muted-foreground">Get inspired by AI-generated room designs from our community</p>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-          {inspirations.map((item, i) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className="group relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer"
-            >
-              <Image src={item.image} alt={item.title} fill className="object-cover transition-transform group-hover:scale-110" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="absolute bottom-4 left-4 right-4">
-                  <p className="text-white font-medium">{item.title}</p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}

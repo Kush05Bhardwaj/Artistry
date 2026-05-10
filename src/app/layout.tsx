@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
-import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
+import { FloatingNavbar } from '@/components/home/FloatingNavbar';
 import { Toaster } from "@/components/ui/toaster"
 import { WhatsAppButton } from "@/components/ui/whatsapp-button";
 import { AuthProvider } from '@/hooks/use-auth';
@@ -127,7 +127,7 @@ export default function RootLayout({
         <ErrorBoundary>
           <AuthProvider>
             <div className="relative flex min-h-screen flex-col">
-              <Header />
+              <FloatingNavbar />
               <main className="flex-1">{children}</main>
               <Footer />
             </div>
