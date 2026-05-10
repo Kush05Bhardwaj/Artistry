@@ -41,14 +41,10 @@ const navItems: NavItem[] = [
   { label: "Analytics", href: "/admin/analytics", icon: <BarChart3 className="h-5 w-5" /> },
   { label: "Users", href: "/admin/users", icon: <Users className="h-5 w-5" /> },
   { label: "Designs", href: "/admin/designs", icon: <Palette className="h-5 w-5" /> },
-  { label: "Redesign Gallery", href: "/admin/redesign-gallery", icon: <ImageIcon className="h-5 w-5" /> },
   { label: "AI Usage", href: "/admin/ai-usage", icon: <Bot className="h-5 w-5" /> },
   { label: "Traffic", href: "/admin/traffic", icon: <Globe className="h-5 w-5" /> },
   { label: "Site Routes", href: "/admin/site-routes", icon: <Route className="h-5 w-5" /> },
   { label: "Reports", href: "/admin/reports", icon: <FileText className="h-5 w-5" /> },
-  { label: "Activity Logs", href: "/admin/activity-logs", icon: <Activity className="h-5 w-5" /> },
-  { label: "Moderation", href: "/admin/moderation", icon: <Shield className="h-5 w-5" />, badge: 3 },
-  { label: "Rewards", href: "/admin/rewards", icon: <Trophy className="h-5 w-5" /> },
   { label: "Settings", href: "/admin/settings", icon: <Settings className="h-5 w-5" /> },
 ];
 
