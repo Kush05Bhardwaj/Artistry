@@ -1,18 +1,38 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { jwtVerify } from 'jose';
 
 const protectedRoutes = ['/design', '/redesign', '/account', '/admin'];
+const authTokenName = 'next-auth.session-token';
 
-export default auth((req) => {
-  const isProtected = protectedRoutes.some((route) => req.nextUrl.pathname.startsWith(route));
+function getTokenFromCookie(request: Request, tokenName: string): string | undefined {
+  const cookies = request.headers.get('cookie') || '';
+  return cookies.split(';').find(c => c.trim().startsWith(`${tokenName}=`))?.split('=')[1];
+}
 
-  if (isProtected && !req.auth) {
-    const url = new URL('/login', req.nextUrl.origin);
-    return NextResponse.redirect(url);
+export default async function middleware(request: Request) {
+  const pathname = new URL(request.url).pathname;
+  const isProtected = protectedRoutes.some(route => pathname.startsWith(route));
+
+  if (!isProtected) {
+    return NextResponse.next();
   }
 
-  return NextResponse.next();
-});
+  const token = getTokenFromCookie(request, authTokenName);
+
+  if (!token) {
+    const loginUrl = new URL('/login', request.url);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  try {
+    const secret = new TextEncoder().encode(process.env.AUTH_SECRET);
+    await jwtVerify(token, secret);
+    return NextResponse.next();
+  } catch {
+    const loginUrl = new URL('/login', request.url);
+    return NextResponse.redirect(loginUrl);
+  }
+}
 
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
