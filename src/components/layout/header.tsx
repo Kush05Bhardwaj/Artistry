@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 const navLinks = [
   { href: '/design', label: 'AI Design' },
   { href: '/about', label: 'About' },
+  { href: '/feedback', label: 'Feedback' },
 ];
 
 export function Header() {
