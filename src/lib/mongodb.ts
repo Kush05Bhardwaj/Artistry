@@ -1,19 +1,5 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 
-// Fix local Node.js DNS resolution issues (ECONNREFUSED querySrv) by forcing Google DNS.
-// Guard against edge runtimes where the Node-only dns module is unavailable.
-const isNodeRuntime = typeof process !== 'undefined' && !!process.versions?.node;
-if (process.env.NODE_ENV === 'development' && isNodeRuntime) {
-  void (async () => {
-    try {
-      const dns = await import('node:dns');
-      dns.setServers(['8.8.8.8', '8.8.4.4']);
-    } catch {
-      // Ignore when running in environments without the dns module.
-    }
-  })();
-}
-
 if (!process.env.MONGODB_URI) {
   throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
 }
