@@ -1,8 +1,9 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 
 // Fix local Node.js DNS resolution issues (ECONNREFUSED querySrv) by forcing Google DNS.
-// Use a dynamic import so edge runtimes don't crash on the Node-only dns module.
-if (process.env.NODE_ENV === 'development') {
+// Guard against edge runtimes where the Node-only dns module is unavailable.
+const isNodeRuntime = typeof process !== 'undefined' && !!process.versions?.node;
+if (process.env.NODE_ENV === 'development' && isNodeRuntime) {
   void (async () => {
     try {
       const dns = await import('node:dns');
