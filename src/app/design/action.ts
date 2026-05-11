@@ -10,21 +10,47 @@ const fileToDataUri = async (file: File): Promise<string> => {
   return `data:${file.type};base64,${base64}`;
 };
 
+type SuggestionsPayload = {
+  photoDataUri: string;
+  roomType?: string;
+  roomSize?: string;
+  style?: string;
+  budget?: string;
+};
+
 export async function getSuggestions(
-  formData: FormData
+  input: FormData | SuggestionsPayload
 ): Promise<{ data?: GenerateDecorSuggestionsOutput; error?: string }> {
   try {
-    const photo = formData.get("photo") as File;
-    const roomType = formData.get("roomType") as string | undefined;
-    const roomSize = formData.get("roomSize") as string | undefined;
-    const style = formData.get("style") as string | undefined;
-    const budget = formData.get("budget") as string | undefined;
+    let photoDataUri: string | null = null;
+    let roomType: string | undefined;
+    let roomSize: string | undefined;
+    let style: string | undefined;
+    let budget: string | undefined;
 
-    if (!photo) {
-      return { error: "No photo provided." };
+    if (input instanceof FormData) {
+      const photo = input.get("photo") as File | null;
+      roomType = input.get("roomType") as string | undefined;
+      roomSize = input.get("roomSize") as string | undefined;
+      style = input.get("style") as string | undefined;
+      budget = input.get("budget") as string | undefined;
+
+      if (!photo) {
+        return { error: "No photo provided." };
+      }
+
+      photoDataUri = await fileToDataUri(photo);
+    } else {
+      photoDataUri = input.photoDataUri;
+      roomType = input.roomType;
+      roomSize = input.roomSize;
+      style = input.style;
+      budget = input.budget;
     }
 
-    const photoDataUri = await fileToDataUri(photo);
+    if (!photoDataUri) {
+      return { error: "No photo provided." };
+    }
 
     const suggestions = await generateDecorSuggestions({
       photoDataUri,

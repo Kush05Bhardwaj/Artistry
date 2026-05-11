@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { UploadCloud, Sparkles, RotateCcw, Download, Heart, Share2, Maximize2, Loader2, CheckCircle2, ChevronRight, Lightbulb, Sliders, Home, Sun, Sofa, Armchair } from "lucide-react";
+import { UploadCloud, Sparkles, RotateCcw, Download, Heart, Share2, Maximize2, Loader2, CheckCircle2, ChevronRight, Lightbulb, Sliders, Home, Sun, Sofa, Armchair, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
@@ -10,7 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { getSuggestions } from "./action";
+import { saveDesignAction } from "./save-action";
 import { generateRedesignedImage } from "@/ai/flows/generate-redesigned-image";
+import { getCostEstimate } from "@/app/redesign/action";
+import type { GenerateCostEstimateOutput } from "@/ai/flows/generate-cost-estimate";
 import Link from "next/link";
 
 const ROOM_TYPES = [
@@ -32,13 +36,11 @@ const STYLES = [
   { id: "dark", label: "Dark Academia", gradient: "from-stone-800 to-stone-600", preview: "https://images.unsplash.com/photo-1600210492493-0946911123ea?w=200" },
 ];
 
-const AI_STAGES = [
-  { id: 1, label: "Analyzing room layout", progress: 20 },
-  { id: 2, label: "Detecting furniture & walls", progress: 40 },
-  { id: 3, label: "Understanding lighting", progress: 60 },
-  { id: 4, label: "Creating redesign concept", progress: 80 },
-  { id: 5, label: "Rendering final result", progress: 100 },
-];
+const AI_STAGES = {
+  suggestions: { label: "Generating redesign suggestions", progress: 30 },
+  redesign: { label: "Rendering redesigned image", progress: 70 },
+  cost: { label: "Estimating cost breakdown", progress: 90 },
+};
 
 export default function DesignPage() {
   return (
@@ -51,18 +53,29 @@ export default function DesignPage() {
 
 function AIStudioSection() {
   const [image, setImage] = useState<string | null>(null);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [roomType, setRoomType] = useState("living_room");
   const [style, setStyle] = useState("modern");
   const [budget, setBudget] = useState([50]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generationStage, setGenerationStage] = useState(0);
+  const [generationStage, setGenerationStage] = useState<"suggestions" | "redesign" | "cost" | null>(null);
+  const [suggestions, setSuggestions] = useState<string[] | null>(null);
+  const [detectedItems, setDetectedItems] = useState<string[] | null>(null);
   const [result, setResult] = useState<string | null>(null);
+  const [costEstimate, setCostEstimate] = useState<GenerateCostEstimateOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setUploadFile(file);
+      setSuggestions(null);
+      setDetectedItems(null);
+      setResult(null);
+      setCostEstimate(null);
+      setError(null);
       const reader = new FileReader();
       reader.onload = (e) => {
         setImage(e.target?.result as string);
@@ -73,19 +86,34 @@ function AIStudioSection() {
   };
 
   const handleGenerate = async () => {
-    if (!image) return;
+    if (!image || !uploadFile) return;
     setIsGenerating(true);
-    setGenerationStage(0);
+    setGenerationStage("suggestions");
     setError(null);
+    setSuggestions(null);
+    setDetectedItems(null);
+    setResult(null);
+    setCostEstimate(null);
 
-    for (let i = 0; i < AI_STAGES.length; i++) {
-      setGenerationStage(i);
-      await new Promise(r => setTimeout(r, 1500));
-    }
+    const budgetLabel = budget[0] < 33 ? "Budget-Friendly" : budget[0] < 66 ? "Mid-Range" : "Premium";
 
     try {
       const roomTypeLabel = ROOM_TYPES.find(r => r.id === roomType)?.label || 'room';
-      const suggestionsData = [`Modern ${style} interior design`, `Warm ambient lighting`, `Minimal furniture arrangement`, `Natural color palette`];
+      const suggestionResponse = await getSuggestions({
+        photoDataUri: image,
+        roomType: roomTypeLabel,
+        style,
+        budget: budgetLabel,
+      });
+      if (suggestionResponse.error || !suggestionResponse.data) {
+        throw new Error(suggestionResponse.error || "Failed to generate suggestions");
+      }
+
+      setSuggestions(suggestionResponse.data.suggestions);
+      setDetectedItems(suggestionResponse.data.detectedItems);
+
+      setGenerationStage("redesign");
+      const suggestionsData = suggestionResponse.data.suggestions;
 
       const generated = await generateRedesignedImage({
         photoDataUri: image,
@@ -96,12 +124,66 @@ function AIStudioSection() {
 
       setResult(generated.photoDataUri);
       sessionStorage.setItem('redesignedImage', generated.photoDataUri);
+
+      setGenerationStage("cost");
+      const costResponse = await getCostEstimate({
+        originalPhotoDataUri: image,
+        redesignedPhotoDataUri: generated.photoDataUri,
+        roomType: roomTypeLabel,
+        budget: budgetLabel,
+      });
+      if (costResponse.data) {
+        setCostEstimate(costResponse.data);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Generation failed");
     } finally {
       setIsGenerating(false);
+      setGenerationStage(null);
     }
   };
+
+  const handleSaveDesign = async () => {
+    if (!image || !result) {
+      setError("Generate a redesign before saving.");
+      return;
+    }
+    if (!costEstimate) {
+      setError("Wait for the cost breakdown before saving.");
+      return;
+    }
+
+    setIsSaving(true);
+    setError(null);
+
+    const budgetAnalysis = {
+      furniture: [],
+      decor: costEstimate.items.map((item) => ({
+        name: item.item,
+        estimatedCost: item.estimatedCost,
+      })),
+      lighting: [],
+      totalEstimated: costEstimate.totalCostRaw,
+    };
+
+    const saveResponse = await saveDesignAction({
+      originalImage: image,
+      redesignedImage: result,
+      roomType,
+      style,
+      budget: budget[0],
+      suggestions: suggestions ?? ["Redesign suggestions not available"],
+      budgetAnalysis,
+    });
+
+    if (saveResponse?.error) {
+      setError(saveResponse.error);
+    }
+
+    setIsSaving(false);
+  };
+
+  const currentStage = generationStage === null ? null : AI_STAGES[generationStage];
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-muted/20">
@@ -308,37 +390,68 @@ function AIStudioSection() {
                       <Sparkles className="w-6 h-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold">AI is designing your room...</h3>
-                      <p className="text-muted-foreground text-sm">This may take a few moments</p>
+                        <h3 className="text-xl font-bold">AI is working on your redesign</h3>
+                        <p className="text-muted-foreground text-sm">
+                          {currentStage?.label || "This may take a few moments"}
+                        </p>
                     </div>
                   </div>
 
-                  <Progress value={AI_STAGES[generationStage]?.progress || 0} className="h-2 rounded-full mb-6" />
-
-                  <div className="space-y-3">
-                    {AI_STAGES.map((stage, i) => (
-                      <div key={stage.id} className={cn(
-                        "flex items-center gap-3 transition-all",
-                        i < generationStage && "text-green-500",
-                        i === generationStage && "text-primary font-medium",
-                        i > generationStage && "text-muted-foreground"
-                      )}>
-                        {i < generationStage ? (
-                          <CheckCircle2 className="w-5 h-5" />
-                        ) : i === generationStage ? (
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                        ) : (
-                          <div className="w-5 h-5 rounded-full border-2" />
-                        )}
-                        <span>{stage.label}</span>
-                      </div>
-                    ))}
-                  </div>
+                    <Progress value={currentStage?.progress || 0} className="h-2 rounded-full" />
                 </CardContent>
               </Card>
             </motion.div>
           )}
         </AnimatePresence>
+
+          {/* Suggestions */}
+          <AnimatePresence>
+            {suggestions && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="mt-8"
+              >
+                <Card className="border-0 shadow-2xl">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Sparkles className="w-5 h-5 text-primary" />
+                      <h3 className="text-xl font-bold">Redesign Suggestions</h3>
+                    </div>
+                    <div className="grid gap-6 md:grid-cols-2">
+                      <div>
+                        <p className="text-sm font-medium mb-2">Suggested changes</p>
+                        <ul className="space-y-2 text-sm text-muted-foreground">
+                          {suggestions.map((item) => (
+                            <li key={item} className="flex items-start gap-2">
+                              <CheckCircle2 className="w-4 h-4 text-primary mt-0.5" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      {detectedItems && detectedItems.length > 0 && (
+                        <div>
+                          <p className="text-sm font-medium mb-2">Detected items</p>
+                          <div className="flex flex-wrap gap-2">
+                            {detectedItems.map((item) => (
+                              <span
+                                key={item}
+                                className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground"
+                              >
+                                {item}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
         {/* Result */}
         <AnimatePresence>
@@ -384,9 +497,13 @@ function AIStudioSection() {
                         <RotateCcw className="w-4 h-4 mr-2" />
                         Regenerate
                       </Button>
-                      <Button variant="outline" className="flex-1">
-                        <Heart className="w-4 h-4 mr-2" />
-                        Save Design
+                      <Button variant="outline" className="flex-1" onClick={handleSaveDesign} disabled={isSaving}>
+                        {isSaving ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <Heart className="w-4 h-4 mr-2" />
+                        )}
+                        {isSaving ? "Saving..." : "Save Design"}
                       </Button>
                       <Link href="/products" className="flex-1">
                         <Button className="w-full">
@@ -397,6 +514,47 @@ function AIStudioSection() {
                     </div>
                   </div>
                 </div>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Cost Breakdown */}
+        <AnimatePresence>
+          {costEstimate && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="mt-8"
+            >
+              <Card className="border-0 shadow-2xl">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Receipt className="w-5 h-5 text-primary" />
+                    <h3 className="text-xl font-bold">Estimated Cost Breakdown</h3>
+                  </div>
+                  <p className="text-muted-foreground mb-6">{costEstimate.summary}</p>
+                  <div className="space-y-4">
+                    {costEstimate.items.map((item, i) => (
+                      <div key={`${item.item}-${i}`} className="flex justify-between gap-4 border-b border-border/50 pb-4 last:border-0 last:pb-0">
+                        <div>
+                          <h4 className="font-semibold">{item.item}</h4>
+                          <p className="text-sm text-muted-foreground">{item.reason}</p>
+                        </div>
+                        <div className="font-medium whitespace-nowrap min-w-[110px] text-right">
+                          Rs. {item.estimatedCost.toLocaleString("en-IN")}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
+                    <h3 className="text-xl font-bold">Total Estimate</h3>
+                    <span className="text-xl font-bold text-primary">
+                      Rs. {costEstimate.totalCostRaw.toLocaleString("en-IN")}
+                    </span>
+                  </div>
+                </CardContent>
               </Card>
             </motion.div>
           )}
