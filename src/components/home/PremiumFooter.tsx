@@ -34,8 +34,8 @@ export function PremiumFooter() {
 
             {/* Contact */}
             <div className="space-y-2 mb-5">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground"><Mail className="w-4 h-4 text-primary" /> <span>hello@artistry.ai</span></div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground"><Phone className="w-4 h-4 text-primary" /> <span>+91 98765 43210</span></div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground"><Mail className="w-4 h-4 text-primary" /> <span>agaur2813@gmail.com</span></div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground"><Phone className="w-4 h-4 text-primary" /> <span>8287500899</span></div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground"><MapPin className="w-4 h-4 text-primary" /> <span>Mumbai, Maharashtra</span></div>
             </div>
 
