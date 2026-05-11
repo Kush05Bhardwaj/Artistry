@@ -1,37 +1,23 @@
-import { NextResponse } from 'next/server';
-import { jwtVerify } from 'jose';
+import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 
-const protectedRoutes = ['/design', '/redesign', '/account', '/admin'];
-const authTokenName = 'next-auth.session-token';
-
-function getTokenFromCookie(request: Request, tokenName: string): string | undefined {
-  const cookies = request.headers.get('cookie') || '';
-  return cookies.split(';').find(c => c.trim().startsWith(`${tokenName}=`))?.split('=')[1];
-}
+const protectedRoutes = ["/design", "/redesign", "/account", "/admin"];
 
 export default async function middleware(request: Request) {
-  const pathname = new URL(request.url).pathname;
-  const isProtected = protectedRoutes.some(route => pathname.startsWith(route));
+  const { pathname } = new URL(request.url);
+  const isProtected = protectedRoutes.some((route) => pathname.startsWith(route));
 
   if (!isProtected) {
     return NextResponse.next();
   }
 
-  const token = getTokenFromCookie(request, authTokenName);
-
-  if (!token) {
-    const loginUrl = new URL('/login', request.url);
+  const session = await auth();
+  if (!session?.user) {
+    const loginUrl = new URL("/login", request.url);
     return NextResponse.redirect(loginUrl);
   }
 
-  try {
-    const secret = new TextEncoder().encode(process.env.AUTH_SECRET);
-    await jwtVerify(token, secret);
-    return NextResponse.next();
-  } catch {
-    const loginUrl = new URL('/login', request.url);
-    return NextResponse.redirect(loginUrl);
-  }
+  return NextResponse.next();
 }
 
 export const config = {
