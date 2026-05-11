@@ -128,7 +128,7 @@ export default function RootLayout({
           <AuthProvider>
             <div className="relative flex min-h-screen flex-col">
               <FloatingNavbar />
-              <main className="flex-1">{children}</main>
+              <main className="flex-1 pt-24 md:pt-28">{children}</main>
               <Footer />
             </div>
             <WhatsAppButton />
