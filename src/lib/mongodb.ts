@@ -1,8 +1,17 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
-import dns from 'dns';
 
-// Fix local Node.js DNS resolution issues (ECONNREFUSED querySrv) by forcing Google DNS
-dns.setServers(['8.8.8.8', '8.8.4.4']);
+// Fix local Node.js DNS resolution issues (ECONNREFUSED querySrv) by forcing Google DNS.
+// Use a dynamic import so edge runtimes don't crash on the Node-only dns module.
+if (process.env.NODE_ENV === 'development') {
+  void (async () => {
+    try {
+      const dns = await import('node:dns');
+      dns.setServers(['8.8.8.8', '8.8.4.4']);
+    } catch {
+      // Ignore when running in environments without the dns module.
+    }
+  })();
+}
 
 if (!process.env.MONGODB_URI) {
   throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
