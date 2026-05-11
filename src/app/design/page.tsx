@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useCallback, useRef } from "react";
-import { motion, AnimatePresence, useInView } from "framer-motion";
-import { UploadCloud, Sparkles, Wand2, RotateCcw, Download, Heart, Share2, Maximize2, Loader2, CheckCircle2, X, ChevronRight, Lightbulb, Sliders, Palette, Home, Sun, Sofa, Armchair } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { UploadCloud, Sparkles, RotateCcw, Download, Heart, Share2, Maximize2, Loader2, CheckCircle2, ChevronRight, Lightbulb, Sliders, Home, Sun, Sofa, Armchair } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
@@ -10,7 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { getSuggestions } from "./action";
 import { generateRedesignedImage } from "@/ai/flows/generate-redesigned-image";
 import Link from "next/link";
 
@@ -59,8 +58,6 @@ function AIStudioSection() {
   const [generationStage, setGenerationStage] = useState(0);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [suggestions, setSuggestions] = useState<any>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,9 +123,11 @@ function AIStudioSection() {
               </div>
               <CardContent className="p-6">
                 {!image ? (
-                  <div
+                  <button
+                    type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="relative aspect-[4/3] rounded-2xl border-2 border-dashed border-muted-foreground/25 hover:border-primary/50 transition-all cursor-pointer group overflow-hidden"
+                    className="relative aspect-[4/3] w-full rounded-2xl border-2 border-dashed border-muted-foreground/25 hover:border-primary/50 transition-all cursor-pointer group overflow-hidden"
+                    aria-label="Upload a room photo"
                   >
                     <input
                       ref={fileInputRef}
@@ -149,7 +148,7 @@ function AIStudioSection() {
                     <div className="absolute inset-0 rounded-2xl pointer-events-none">
                       <div className="absolute inset-0 border-2 border-dashed border-primary/0 group-hover:border-primary/30 rounded-2xl animate-pulse" />
                     </div>
-                  </div>
+                  </button>
                 ) : (
                   <div className="space-y-4">
                     <div className="relative aspect-[4/3] rounded-2xl overflow-hidden group">
@@ -164,20 +163,18 @@ function AIStudioSection() {
                       </div>
                     </div>
 
-                    {suggestions && (
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="p-3 bg-green-500/10 rounded-lg border border-green-500/20">
-                          <CheckCircle2 className="w-4 h-4 text-green-500 mb-1" />
-                          <p className="text-xs text-green-500 font-medium">Detected Room</p>
-                          <p className="text-sm font-medium">{suggestions.detectedRoom || "Living Room"}</p>
-                        </div>
-                        <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
-                          <Sun className="w-4 h-4 text-amber-500 mb-1" />
-                          <p className="text-xs text-amber-500 font-medium">Lighting</p>
-                          <p className="text-sm font-medium">{suggestions.lighting || "Natural Light"}</p>
-                        </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+                        <CheckCircle2 className="w-4 h-4 text-green-500 mb-1" />
+                        <p className="text-xs text-green-500 font-medium">Detected Room</p>
+                        <p className="text-sm font-medium">{ROOM_TYPES.find((r) => r.id === roomType)?.label || "Living Room"}</p>
                       </div>
-                    )}
+                      <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                        <Sun className="w-4 h-4 text-amber-500 mb-1" />
+                        <p className="text-xs text-amber-500 font-medium">Lighting</p>
+                        <p className="text-sm font-medium">Natural Light</p>
+                      </div>
+                    </div>
                   </div>
                 )}
               </CardContent>
@@ -201,7 +198,7 @@ function AIStudioSection() {
               <CardContent className="p-6 space-y-8">
                 {/* Room Type */}
                 <div>
-                  <label className="text-sm font-medium mb-3 block">Room Type</label>
+                  <p className="text-sm font-medium mb-3">Room Type</p>
                   <div className="grid grid-cols-5 gap-2">
                     {ROOM_TYPES.map((room) => (
                       <button
@@ -223,7 +220,7 @@ function AIStudioSection() {
 
                 {/* Style Selection */}
                 <div>
-                  <label className="text-sm font-medium mb-3 block">Design Style</label>
+                  <p className="text-sm font-medium mb-3">Design Style</p>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     {STYLES.map((s) => (
                       <button
@@ -254,7 +251,7 @@ function AIStudioSection() {
                 {/* Budget Slider */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <label className="text-sm font-medium">Budget Range</label>
+                    <p className="text-sm font-medium">Budget Range</p>
                     <Badge variant="outline" className="bg-primary/10">
                       {budget[0] < 33 ? "Budget-Friendly" : budget[0] < 66 ? "Mid-Range" : "Premium"}
                     </Badge>
@@ -266,6 +263,11 @@ function AIStudioSection() {
                   </div>
                 </div>
 
+                {error && (
+                  <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+                    {error}
+                  </div>
+                )}
                 {/* Generate Button */}
                 <Button
                   size="lg"
