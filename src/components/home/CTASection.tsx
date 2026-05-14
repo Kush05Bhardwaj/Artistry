@@ -17,11 +17,6 @@ export function CTASection() {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-3xl mx-auto text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
-            <Zap className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">Free to get started</span>
-          </div>
 
           {/* Headline */}
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-5 leading-tight">
@@ -34,7 +29,7 @@ export function CTASection() {
           {/* Subtitle */}
           <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">
             Join 15,000+ homeowners who already transformed their rooms with our AI.
-            <span className="block mt-1 font-medium text-foreground">No design skills needed. No credit card required.</span>
+            <span className="block mt-1 font-medium text-foreground">No design skills needed.</span>
           </p>
 
           {/* CTA Buttons */}
@@ -64,9 +59,8 @@ export function CTASection() {
 
           {/* Trust Features */}
           <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
-            <span className="flex items-center gap-2"><Shield className="w-4 h-4 text-primary" /> 100% Free</span>
+            <span className="flex items-center gap-2"><Shield className="w-4 h-4 text-primary" /> No credit card required</span>
             <span className="flex items-center gap-2"><Clock className="w-4 h-4 text-primary" /> Ready in 12s</span>
-            <span className="flex items-center gap-2"><Zap className="w-4 h-4 text-primary" /> No signup needed</span>
           </div>
         </div>
       </div>
