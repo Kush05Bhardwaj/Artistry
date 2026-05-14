@@ -173,6 +173,7 @@ function AIStudioSection() {
       style,
       budget: budget[0],
       suggestions: suggestions ?? ["Redesign suggestions not available"],
+      costEstimate,
       budgetAnalysis,
     });
 

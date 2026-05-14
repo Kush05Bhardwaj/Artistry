@@ -1,5 +1,6 @@
 import clientPromise from "./mongodb";
 import { ObjectId } from "mongodb";
+import type { GenerateCostEstimateOutput } from "@/ai/flows/generate-cost-estimate";
 
 export interface Design {
   _id?: ObjectId;
@@ -11,6 +12,7 @@ export interface Design {
   style: string;
   budget: number;
   suggestions: string[];
+  costEstimate?: GenerateCostEstimateOutput;
   budgetAnalysis: {
     furniture: { name: string; estimatedCost: number; productUrl?: string }[];
     decor: { name: string; estimatedCost: number; productUrl?: string }[];

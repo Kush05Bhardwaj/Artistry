@@ -22,7 +22,7 @@ export async function getUserDesignsAction() {
       designs: designs.map(d => ({
         id: d._id.toString(),
         originalImage: d.originalImage,
-        generatedImage: d.generatedImage,
+        generatedImage: d.generatedImage || d.redesignedImage,
         roomType: d.roomType,
         style: d.style,
         suggestions: d.suggestions,

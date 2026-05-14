@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { saveDesign } from "@/lib/designs";
+import type { GenerateCostEstimateOutput } from "@/ai/flows/generate-cost-estimate";
 
 interface SaveDesignInput {
   originalImage: string;
@@ -10,6 +11,7 @@ interface SaveDesignInput {
   style: string;
   budget: number;
   suggestions: string[];
+  costEstimate?: GenerateCostEstimateOutput;
   budgetAnalysis: {
     furniture: { name: string; estimatedCost: number; productUrl?: string }[];
     decor: { name: string; estimatedCost: number; productUrl?: string }[];
